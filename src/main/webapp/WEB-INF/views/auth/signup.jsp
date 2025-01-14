@@ -31,7 +31,7 @@
                     <form:form
                             modelAttribute="signupDto"
                             class="login__input" action="/auth/signup" method="post">
-
+<%-- jsp에서 동기 통신시 필드별 에러 메세지 전달받아 뷰에서 사용하는 방법--%>
 
                         <form:input path="username" type="text" name="username" placeholder="아이디" required="required"
                                     maxlength="30"/>

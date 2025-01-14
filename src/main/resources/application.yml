@@ -30,6 +30,10 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+    properties:
+      hibernate:
+#        format_sql: true
+        default_batch_fetch_size: 100
 
   servlet:
     multipart:
@@ -40,6 +44,19 @@ spring:
     user:
       name: test
       password: 1234
+    oauth2:
+      client:
+        registration:
+          facebook:
+            client-id: 1422021075423140
+            client-secret: 85f20582d1b9cbcb76b84eb499b0c7df
+            scope:
+              - public_profile
+              - email
+
+
+
+
 
 file:
   path: C:/workspace/springbootwork/upload/

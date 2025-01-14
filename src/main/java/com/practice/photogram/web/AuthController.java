@@ -39,30 +39,33 @@ public class AuthController {
 
 
     @PostMapping("/auth/signup")
+    // 동기통신에서 validation 에러처리 - 내가 만든 거
     public String signup(@Valid SignupDto signupDto, BindingResult bindingResult) { // key=value (x-www-form-urlencoded)
 
 
+        // 이건 DB에 가봐야 하는 후처리 문제 - 글로벌 에러 아닌가 의문 - x jsp에서 해당 필드에 대해 에러 메세지를 표현해야 하므로 rejectValue가 맞다.
+        // 강의에서는 자동으로 담기는 bindingresult 외에는 전부 익셉션핸들러로 처리했지만
+        // 이렇게 해야 메세지 소스를 사용할 수 있다.
         if (userService.checkUsernameDuplicate(signupDto.getUsername()))
             bindingResult.rejectValue("username", "NotUnique", new Object[]{"username"}, null);
 
+        // 이건 DB에 가봐야 하는 후처리 문제
         if (userService.checkEmailDuplicate(signupDto.getEmail()))
             bindingResult.rejectValue("email", "NotUnique", new Object[]{"email"}, null);
 
-
+        // bindingResult에 담긴 오류는 자동으로 모델에 담겨 뷰로 넘어간다.
         if (bindingResult.hasErrors())
             return "auth/signup";
 
 
         User user = signupDto.toEntity();
         authService.회원가입(user);
-        // 로그를 남기는 후처리!!
         return "redirect:/auth/signin";
 
     }
 
 
-//     회원가입버튼 -> /auth/signup -> /auth/signin
-//     회원가입버튼 X
+// 동기처리 원래버전.
 //    @PostMapping("/auth/signup")
 //    public String signup(@Valid SignupDto signupDto, BindingResult bindingResult) { // key=value (x-www-form-urlencoded)
 //
@@ -75,13 +78,12 @@ public class AuthController {
 //            }
 //
 //
-//            throw new CustomValidationException("유효성 검사 ", errorMap);
+//            throw new CustomValidationException("유효성 검사 실패", errorMap);
 //
 //        } else {
 //
 //            User user = signupDto.toEntity();
 //            authService.회원가입(user);
-//            // 로그를 남기는 후처리!!
 //            return "auth/signin";
 //        }
 //    }

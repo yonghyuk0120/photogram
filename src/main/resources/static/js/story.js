@@ -18,7 +18,7 @@ function storyLoad() {
 		url: `/api/image?page=${page}`,
 		dataType: "json"
 	}).done(res => {
-		//console.log(res);
+		console.log(res);
 		res.data.content.forEach((image)=>{
 			let storyItem = getStoryItem(image);
 			$("#storyList").append(storyItem);
@@ -32,7 +32,7 @@ storyLoad();
 
 function getStoryItem(image) {
 	let item = `<div class="story-list__item">
-	<div class="sl__item__header">
+<div class="sl__item__header">
 		<div>
 			<img class="profile-image" src="/upload/${image.user.profileImageUrl}"
 				onerror="this.src='/images/person.jpeg'" />
@@ -49,13 +49,14 @@ function getStoryItem(image) {
 
 			<button>`;
 
+	/// likestate
 	if(image.likeState){
 		item += `<i class="fas fa-heart active" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;
 	}else{
 		item += `<i class="far fa-heart" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;
 	}
 
-
+	/// likecount
 	item += `
 			</button>
 		</div>
@@ -68,6 +69,8 @@ function getStoryItem(image) {
 
 		<div id="storyCommentList-${image.id}">`;
 
+
+// 댓글 보여주기
 	image.comments.forEach((comment)=>{
 		item +=`<div class="sl__item__contents__comment" id="storyCommentItem-${comment.id}">
 				<p>
@@ -80,12 +83,13 @@ function getStoryItem(image) {
 									</button>`;
 		}
 
-		item += `	
+		item += `
 			</div>`;
 
 	});
 
 
+	// 댓글 쓰기 부분 뷰
 	item += `
 		</div>
 
@@ -119,6 +123,19 @@ $(window).scroll(() => {
 function toggleLike(imageId) {
 	let likeIcon = $(`#storyLikeIcon-${imageId}`);
 
+
+	// api 기능없는 껍데기
+	// if(likeIcon.hasClass("far")){
+	// 	likeIcon.addClass("fas");
+	// 	likeIcon.addClass("active");
+	// 	likeIcon.removeClass("far")	}
+	// else{
+	// 	likeIcon.removeClass("fas");
+	// 	likeIcon.removeClass("active");
+	// 	likeIcon.addClass("far")
+	//
+	// }
+
 	if (likeIcon.hasClass("far")) { // 좋아요 하겠다
 
 		$.ajax({
@@ -140,7 +157,7 @@ function toggleLike(imageId) {
 
 
 
-	} else { // 좋아요취소 하겠다
+	} else { // 좋아요 취소 하겠다
 
 		$.ajax({
 			type: "delete",
@@ -173,11 +190,12 @@ function addComment(imageId) {
 		imageId: imageId,
 		content: commentInput.val()
 	}
+	// commentapicontroller에서 commentDto 로 받는다.
 
 	//console.log(data);
 	//console.log(JSON.stringify(data));
 
-	if (data.content === "") {
+	if (data.content === "") { // 유효성 검사는 프론트에서도 처리 해야한다.
 		alert("댓글을 작성해주세요!");
 		return;
 	}
@@ -189,12 +207,12 @@ function addComment(imageId) {
 		contentType: "application/json; charset=utf-8",
 		dataType: "json"
 	}).done(res=>{
-		//console.log("성공", res);
+		console.log("댓글 쓰기 성공", res);
 
 		let comment = res.data;
 
 		let content = `
-		  <div class="sl__item__contents__comment" id="storyCommentItem-${comment.id}"> 
+		  <div class="sl__item__contents__comment" id="storyCommentItem-${comment.id}">
 		    <p>
 		      <b>${comment.user.username} :</b>
 		      ${comment.content}
@@ -204,7 +222,10 @@ function addComment(imageId) {
 		`;
 		commentList.prepend(content);
 	}).fail(error=>{
-		console.log("오류", error.responseJSON.data.content);
+		// api 관련 유효성 검사 응답 구조 확인해보기
+		// console.log("오류", error);
+		// console.log("오류", error.responseJSON.data.content);
+
 		alert(error.responseJSON.data.content);
 	});
 

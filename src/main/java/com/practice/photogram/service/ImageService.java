@@ -4,6 +4,7 @@ package com.practice.photogram.service;
 import com.practice.photogram.config.auth.PrincipalDetails;
 import com.practice.photogram.domain.image.Image;
 import com.practice.photogram.domain.image.ImageRepository;
+import com.practice.photogram.web.dto.image.ImageStoryDto;
 import com.practice.photogram.web.dto.image.ImageUploadDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,21 +16,27 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class ImageService {
-	
-	private final ImageRepository imageRepository;
-	
-	
+
+    private final ImageRepository imageRepository;
+
+
 	@Transactional(readOnly = true)
-	public List<Image> 인기사진(){
-		return imageRepository.mPopular();
+	public List<ImageStoryDto> 인기사진(int principalId){
+        List<Image> images = imageRepository.mPopular();
+
+
+        List<ImageStoryDto> imageDtos =  images.stream().map(img -> new ImageStoryDto(img, principalId)).toList();
+
+		return imageDtos;
 	}
-	
+
 //	@Transactional(readOnly = true) // 영속성 컨텍스트 변경 감지를 해서, 더티체킹, flush(반영) X
 //	public Page<Image> 이미지스토리(int principalId, Pageable pageable){
 //		Page<Image> images = imageRepository.mStory(principalId, pageable);
@@ -50,28 +57,56 @@ public class ImageService {
 //
 //		return images;
 //	}
+
+    @Value("${file.path}")
+    private String uploadFolder;
+
+
+
+//    // 페이징 처리 이후
+//    @Transactional(readOnly = true)
+//    public Page<ImageStoryDto> 이미지스토리(int principalId, Pageable pageable) {
+//        Page<Image> images = imageRepository.findImages(principalId, pageable);
 //
-	
-	@Value("${file.path}")
-	private String uploadFolder;
-	
-	@Transactional
-	public void 사진업로드(ImageUploadDto imageUploadDto, PrincipalDetails principalDetails) {
-		UUID uuid = UUID.randomUUID(); // uuid
-		String imageFileName = uuid+"_"+imageUploadDto.getFile().getOriginalFilename(); // 1.jpg
-		System.out.println("이미지 파일이름 : "+imageFileName);
-		
-		Path imageFilePath = Paths.get(uploadFolder+imageFileName);
-		
-		// 통신, I/O(하드에 기록, 혹은 읽을때) -> 예외가 발생할 수 있다.
-		try {
-			Files.write(imageFilePath, imageUploadDto.getFile().getBytes());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		// image 테이블에 저장
-		Image image = imageUploadDto.toEntity(imageFileName, principalDetails.getUser()); // 5cf6237d-c404-43e5-836b-e55413ed0e49_bag.jpeg
-		imageRepository.save(image);
-	}
+//        Page<ImageStoryDto> imageDtos = images.map(ImageStoryDto::new);
+////        = images.map(img -> new ImageStoryDto(img));
+//
+//        return imageDtos;
+//    }
+
+
+    // 페이징 처리 이후 + like  추가
+    @Transactional(readOnly = true)
+    public Page<ImageStoryDto> 이미지스토리(int principalId, Pageable pageable) {
+        Page<Image> images = imageRepository.findImages(principalId, pageable);
+        // image를 가져오며 likes와 comments를 가져오는데 배치 사용하면 get사용시 알아서 쿼리를 in으로 바꾸면서 잘 가져와진다. get은 아래 new 생성자 내부에서 사용한다.
+
+        Page<ImageStoryDto> imageDtos = images.map(img -> new ImageStoryDto(img, principalId));
+        //                = images.map(ImageStoryDto::new);
+        // 만약 principalId 없이 인자를 img만을 받는다면 위처럼 메소드 참조 표현식 가능
+
+
+        return imageDtos;
+    }
+    @Transactional
+    public void 사진업로드(ImageUploadDto imageUploadDto, PrincipalDetails principalDetails) {
+        UUID uuid = UUID.randomUUID(); // uuid
+        String imageFileName = uuid + "_" + imageUploadDto.getFile().getOriginalFilename(); // 1.jpg
+        System.out.println("이미지 파일이름 : " + imageFileName);
+
+        Path imageFilePath = Paths.get(uploadFolder + imageFileName);
+
+        // 통신, I/O(하드에 기록, 혹은 읽을때) -> 예외가 발생할 수 있다.
+        try {
+            Files.write(imageFilePath, imageUploadDto.getFile().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // image 테이블에 주소 저장
+        Image image = imageUploadDto.toEntity(imageFileName, principalDetails.getUser()); // 5cf6237d-c404-43e5-836b-e55413ed0e49_bag.jpeg
+        imageRepository.save(image);
+    }
+
+
 }

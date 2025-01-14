@@ -1,13 +1,11 @@
 package com.practice.photogram.domain.user;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.practice.photogram.domain.image.Image;
 
 import com.practice.photogram.domain.subscribe.Subscribe;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -25,7 +23,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 번호 증가 전략이 데이터베이스를 따라간다.
     private int id;
 
-    @Column(length = 100,  unique = true) // OAuth2 로그인을 위해 칼럼 늘리기
+    @Column(length = 100, unique = true) // OAuth2 로그인을 위해 칼럼 늘리기
     private String username;
     @Column(nullable = false)
     private String password;
@@ -38,11 +36,12 @@ public class User {
     private String phone;
     private String gender;
 
-    // 나는 연관관계의 주인이 아니다. 그러므로 테이블에 칼럼을 만들지마.
+    // 나는 연관관계의 주인이 아니므로 DB  테이블에 컬럼을 만들지 말것을 알려줌
 
     // Lazy = User를 Select할 때 해당 User id로 등록된 image들을 가져오지마 - 대신 getImages() 함수의 image들이 호출될 때 가져와!!
     // Eager = User를 Select할 때 해당 User id로 등록된 image들을 전부 Join해서 가져와!!
     @OneToMany(mappedBy = "user")
+//    @JsonIgnoreProperties({"user"})
     private List<Image> images; // 양방향 매핑
 
 //    @OneToMany(mappedBy = "fromUser")

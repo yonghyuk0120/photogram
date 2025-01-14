@@ -41,3 +41,35 @@ public interface SubscribeRepository extends JpaRepository<Subscribe, Integer> {
 			"WHERE s.fromUser.id = :pageUserId")
 	List<SubscribeDto> findSubscribersByPageUserId(@Param("fromUserId") int fromUserId, @Param("pageUserId") int pageUserId);
 }
+
+/*
+위의 쿼리는 자바의 Dto의 생성자를 이용하는 방법이다. 따라서 순서 맞게 생성자에 넣는다 보면 된다.
+public class SubscribeDto {
+	private Integer id; // TODO : int -> Integer
+	private String username;
+	private String profileImageUrl;
+	private Boolean subscribeState;
+	private Boolean equalUserState;
+}
+*/
+
+/*
+SELECT
+	new com.practice.photogram.web.dto.subscribe.SubscribeDto
+	(
+	u.id,
+	u.username,
+	u.profileImageUrl,
+	(
+		SELECT COUNT(s2) > 0
+		FROM Subscribe s2
+		WHERE s2.fromUser.id = :fromUserId AND s2.toUser.id = u.id),
+	(CASE WHEN u.id = :fromUserId THEN true ELSE false END)
+	)
+
+FROM Subscribe s
+JOIN s.toUser u
+WHERE s.fromUser.id = :pageUserId
+
+*/
+

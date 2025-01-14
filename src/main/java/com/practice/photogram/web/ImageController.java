@@ -1,8 +1,10 @@
 package com.practice.photogram.web;
 
 import com.practice.photogram.config.auth.PrincipalDetails;
+import com.practice.photogram.domain.image.Image;
 import com.practice.photogram.handler.ex.CustomValidationException;
 import com.practice.photogram.service.ImageService;
+import com.practice.photogram.web.dto.image.ImageStoryDto;
 import com.practice.photogram.web.dto.image.ImageUploadDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,7 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.awt.*;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -28,8 +30,10 @@ public class ImageController {
 
     // API 구현한다면 - 이유 - (브라우저에서 요청하는게 아니라, 안드로이드,iOS 요청)
     @GetMapping("/image/popular")
-    public String popular(Model model) {
-        // api는 데이터를 리턴하는 서버!!
+    public String popular(Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        List<ImageStoryDto> images = imageService.인기사진(principalDetails.getUser().getId());
+
+        model.addAttribute("images",images);
 
         return "image/popular";
     }
@@ -45,7 +49,7 @@ public class ImageController {
     @PostMapping("/image")
     public String imageUpload(ImageUploadDto imageUploadDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-        // 깍둑이
+        // 깍둑이, 이미지가 첨부되지 않았습니다.
         if(imageUploadDto.getFile().isEmpty()) {
             throw new CustomValidationException("이미지가 첨부되지 않았습니다.", null);
         }

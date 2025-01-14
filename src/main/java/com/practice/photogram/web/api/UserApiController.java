@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,20 +34,12 @@ public class UserApiController {
     private final SubscribeService subscribeService;
 
     @PutMapping("/api/user/{id}")
-    public ResponseEntity<?> update(
-            @PathVariable int id,
-            @Valid UserUpdateDto userUpdateDto,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) {
+    // api validation 유효성 검사, 예외 처리 방법!!
+    public ResponseEntity<?> update(@PathVariable int id, @Valid UserUpdateDto userUpdateDto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errorMap = new HashMap<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errorMap.put(error.getField(), error.getDefaultMessage());
-            }
-            throw new CustomValidationApiException("유효성 검사 실패함", errorMap);
-        }
+
+    // 유효성 검사 코드 aop로 옮겨감.
+
 
 
         User userEntity = userService.회원수정(id, userUpdateDto.toEntity());
@@ -60,10 +53,24 @@ public class UserApiController {
 
 
     @GetMapping("/api/user/{pageUserId}/subscribe")
-    public ResponseEntity<?> subscribeList(@PathVariable int pageUserId, @AuthenticationPrincipal PrincipalDetails principalDetails){
+    public ResponseEntity<?> subscribeList(@PathVariable int pageUserId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         List<SubscribeDto> subscribeDto = subscribeService.구독리스트(principalDetails.getUser().getId(), pageUserId);
 
         return new ResponseEntity<>(new CMRespDto<>(1, "구독자 정보 리스트 가져오기 성공", subscribeDto), HttpStatus.OK);
     }
+
+
+    @PutMapping("/api/user/{principallId}/profileImageUrl")
+    public ResponseEntity<?> profileImageUrlUpdate(@PathVariable int principallId, MultipartFile profileImageFile, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        //받는 변수 이름은 profile.jsp의 폼태그의 name값으로 정확히 잡아야 한다.
+        User userEntity = userService.회원프로필사진변경(principallId, profileImageFile);
+        principalDetails.setUser(userEntity);
+// 이 과정으로 세션 유저가 알아서 변경된다.
+        return new ResponseEntity<>(new CMRespDto<>(1, "프로필사진변경 성공", null), HttpStatus.OK);
+
+
+    }
+
+
 }
