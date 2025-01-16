@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class ImageController {
 
 
     @PostMapping("/image")
-    public String imageUpload(ImageUploadDto imageUploadDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public String imageUpload(ImageUploadDto imageUploadDto, @AuthenticationPrincipal PrincipalDetails principalDetails, RedirectAttributes redirectAttributes) {
 
         // 깍둑이, 이미지가 첨부되지 않았습니다.
         if(imageUploadDto.getFile().isEmpty()) {
@@ -55,7 +56,9 @@ public class ImageController {
         }
 
         imageService.사진업로드(imageUploadDto, principalDetails);
-        return "redirect:/user/"+principalDetails.getUser().getId();
+        redirectAttributes.addAttribute("userId",principalDetails.getUser().getId() );
+
+        return "redirect:/user/{userId}";
     }
 }
 
