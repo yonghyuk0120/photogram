@@ -17,11 +17,11 @@ spring:
     encoding: UTF-8
 
 
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/photogram
-    username: cos
-    password: cos1234
+#  datasource:
+#    driver-class-name: org.mariadb.jdbc.Driver
+#    url: jdbc:mariadb://localhost:3306/photogram
+#    username: cos
+#    password: cos1234
 
   jpa:
     open-in-view: true
@@ -40,19 +40,29 @@ spring:
       enabled: true
       max-file-size: 2MB
 
-  security:
-    user:
-      name: test
-      password: 1234
-    oauth2:
-      client:
-        registration:
-          facebook:
-            client-id: 1422021075423140
-            client-secret: 85f20582d1b9cbcb76b84eb499b0c7df
-            scope:
-              - public_profile
-              - email
+  profiles:
+    include: secret
+
+#  datasource:
+#    driver-class-name: org.mariadb.jdbc.Driver
+#    url: jdbc:mariadb://localhost:3306/photogram
+#    username: cos
+#    password: cos1234
+#
+#  security:
+#    user:
+#      name: test
+#      password: 1234
+#    oauth2:
+#      client:
+#        registration:
+#          facebook:
+#            client-id: 1422021075423140
+#            client-secret: 85f20582d1b9cbcb76b84eb499b0c7df
+#            scope:
+#              - public_profile
+#              - email
+
 
 
 
