@@ -22,7 +22,7 @@ spring:
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
@@ -36,9 +36,26 @@ spring:
       enabled: true
       max-file-size: 2MB
 
-#  데이터 소스와 oauth 설정은 따로 secret.yml 에 추가
-  profiles:
-    include: secret
+
+#  데이터 소스와 oauth 설정은 따로 application-secret.yml 에 추가
+#  - facebook oauth2를 쓰려면 로컬 파일가져오기
+
+#  profiles:
+#    include: secret
+# datasource와 security 파일도 secret으로 옮기기.
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/photogram
+    username: cos
+    password: cos1234
+
+
+  security:
+    user:
+      name: test
+      password: 1234
+
+
 
 
 

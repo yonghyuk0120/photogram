@@ -1,6 +1,6 @@
 package com.practice.photogram.config;
 
-import com.practice.photogram.config.oauth.OAuth2DetailsService;
+//import com.practice.photogram.config.oauth.OAuth2DetailsService;     // oauth2 설정 - 필요시 주석 풀기
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 // 강의랑 다르고 내가 찾아서 설정한 내용이다. 시큐리티 버전이 바뀌어서 이렇게 람다식으로 해야한다.
 public class SecurityConfig {
 
-    private final OAuth2DetailsService oAuth2DetailsService;
+    // oauth2 설정 - 필요시 주석 풀기
+//    private final OAuth2DetailsService oAuth2DetailsService;
 
     @Bean
     BCryptPasswordEncoder encode() {
@@ -45,10 +46,10 @@ public class SecurityConfig {
                 // post 위의 경우 시큐리티가 로그인 프로세스를 진행
                 .defaultSuccessUrl("/"));
 
-        // oauth2 설정
-        http.oauth2Login(oauth-> oauth // oauth2 로그인 추가
-                .userInfoEndpoint(c -> c. // 최종응답을 userInfo로 바로 받음.
-                        userService(oAuth2DetailsService)));
+        // oauth2 설정 - 필요시 주석 풀기
+//        http.oauth2Login(oauth-> oauth // oauth2 로그인 추가
+//                .userInfoEndpoint(c -> c. // 최종응답을 userInfo로 바로 받음.
+//                        userService(oAuth2DetailsService)));
 
 
         return http.build();
