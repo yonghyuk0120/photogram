@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 
 @RequiredArgsConstructor
@@ -18,6 +19,10 @@ public class SecurityConfig {
 
     // oauth2 설정 - 필요시 주석 풀기
 //    private final OAuth2DetailsService oAuth2DetailsService;
+
+    /* 로그인 실패 핸들러 의존성 주입 */
+    private final AuthenticationFailureHandler customAuthenticationFailureHandler;
+
 
     @Bean
     BCryptPasswordEncoder encode() {
@@ -44,6 +49,7 @@ public class SecurityConfig {
                 .loginPage("/auth/signin") // get
                 .loginProcessingUrl("/auth/signin")
                 // post 위의 경우 시큐리티가 로그인 프로세스를 진행
+                .failureHandler(customAuthenticationFailureHandler)
                 .defaultSuccessUrl("/"));
 
         // oauth2 설정 - 필요시 주석 풀기

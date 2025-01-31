@@ -18,8 +18,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
-//    Optional<User> findByUsername(String username);
+    Optional<User> findByUsername(String username);
 
 //    @EntityGraph(attributePaths = {"profileImageUrl", ""})
-    User findByUsername(String username);
+//    User findByUsername(String username);
 }

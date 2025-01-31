@@ -31,8 +31,7 @@ public class ControllerExceptionHanlder {
 		
 	}
 	// 이건 페이지를 반환하는 게 아니라 값을 반환하는 것(이 핸들러 자체가 rest컨트롤러다)
-	// 그런데 그 값이 script코드여서 자동실행되는것
-	
+	// 그런데 그 값이 script코드여서 자동 실행되는것
 	@ExceptionHandler(CustomException.class)
 	public String exception(CustomException e) {
 		return Script.back(e.getMessage());

@@ -3,6 +3,7 @@ package com.practice.photogram.config.auth;
 
 import com.practice.photogram.domain.user.User;
 import com.practice.photogram.domain.user.UserRepository;
+import com.practice.photogram.handler.ex.CustomException;
 import com.practice.photogram.handler.ex.CustomValidationApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,13 +23,12 @@ public class PrincipalDetailsService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
-		User userEntity = userRepository.findByUsername(username);
+		User userEntity = userRepository.findByUsername(username).orElseThrow(() ->
+				new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
 
-		if(userEntity == null) {
-			return null;
-		}else {
-			return new PrincipalDetails(userEntity);
-		}
+
+		return new PrincipalDetails(userEntity);
+
 	}
 
 }

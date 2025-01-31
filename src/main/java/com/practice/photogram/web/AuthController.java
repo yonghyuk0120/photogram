@@ -64,6 +64,8 @@ public class AuthController {
 
     }
 
+    
+
 
 // 동기처리 원래버전.
 //    @PostMapping("/auth/signup")
