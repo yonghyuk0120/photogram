@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .loginProcessingUrl("/auth/signin")
                 // post 위의 경우 시큐리티가 로그인 프로세스를 진행
                 .failureHandler(customAuthenticationFailureHandler)
+                // 커스텀 에러 핸들러
                 .defaultSuccessUrl("/"));
 
         // oauth2 설정 - 필요시 주석 풀기
